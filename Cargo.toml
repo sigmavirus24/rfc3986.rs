@@ -1,0 +1,6 @@
+[package]
+name = "rfc3986"
+version = "0.1.0"
+authors = ["Ian Cordasco <graffatcolmingov@gmail.com>"]
+
+[dependencies]
