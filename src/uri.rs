@@ -29,6 +29,28 @@ pub struct Uri<'a> {
 }
 
 impl<'a> Uri<'a> {
+    /// The `generate_authority` method will generate and return the
+    /// authority for a parsed URI.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rfc3986::uri::Uri;
+    /// let uri: Uri = Uri::from_str("https://github.com/rust-lang/rust");
+    /// assert_eq!("github.com", uri.generate_authority());
+    /// ```
+    ///
+    /// ```
+    /// use rfc3986::uri::Uri;
+    /// let uri: Uri = Uri::from_str("https://username:password@github.com/rust-lang/rust");
+    /// assert_eq!("username:password@github.com", uri.generate_authority());
+    /// ```
+    ///
+    /// ```
+    /// use rfc3986::uri::Uri;
+    /// let uri: Uri = Uri::from_str("https://user:pass@example.com:444/");
+    /// assert_eq!("user:pass@example.com:444", uri.generate_authority());
+    /// ```
     pub fn generate_authority(&self) -> String {
         let mut authority = String::new();
 
@@ -51,6 +73,7 @@ impl<'a> Uri<'a> {
     /// The `from_str` function will parse a `str` into a `Uri`.
     ///
     /// # Examples
+    ///
     /// ```
     /// use rfc3986::uri::Uri;
     /// let uri: Uri = Uri::from_str("https://github.com/rust-lang/rust");
