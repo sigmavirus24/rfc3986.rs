@@ -1,3 +1,4 @@
+use std::ascii::AsciiExt;
 use std::string::String;
 
 /// The container for our parsed Uri.
@@ -162,6 +163,17 @@ impl<'a> Uri<'a> {
             fragment: fragment,
         }
     }
+
+    fn validate_scheme(&self) -> &Uri {
+        if let Some(scheme) = self.scheme {
+            for character in scheme.chars() {
+                if !(character.is_ascii() && character.is_alphabetic()) {
+                    panic!("'{}' is not valid in a URI scheme", character);
+                }
+            }
+        }
+        self
+    }
 }
 
 impl<'a> PartialEq for Uri<'a> {
@@ -227,4 +239,12 @@ mod tests {
             fragment: None,
         });
     }
+
+    #[test]
+    #[should_panic]
+    fn it_validates_a_scheme() {
+        let uri = Uri::from_str("h0tps://github.com");
+        uri.validate_scheme();
+    }
+
 }
