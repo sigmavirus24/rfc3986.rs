@@ -176,8 +176,43 @@ impl UriBuilder {
         self
     }
 
+    /// Build a query string out of a HashMap and add it to the Uri.
+    ///
+    /// It is important to note that the order of the parameters in the query
+    /// string is *not* deterministic. If you inspect the following example
+    /// closely, you'll notice that in order to test the generated query
+    /// string, we destructure the query and match on it as a `&str`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::collections::HashMap;
+    /// use rfc3986::uri_builder::UriBuilder;
+    ///
+    /// let mut query_params = HashMap::new();
+    /// query_params.insert("a".to_string(), "1".to_string());
+    /// query_params.insert("b".to_string(), "2".to_string());
+    ///
+    /// let uri = UriBuilder::new()
+    ///             .add_query_map(&query_params)
+    ///             .finalize();
+    /// if let Some(ref query) = uri.query {
+    ///     match query.as_str() {
+    ///         "a=1&b=2" | "b=2&a=1" => (),
+    ///         _ => panic!("Generated query was incorrect"),
+    ///     }
+    /// }
+    /// ```
     pub fn add_query_map(&mut self,
                          query_map: &HashMap<String, String>) -> &mut UriBuilder {
+        let mut query = String::new();
+        for (key, value) in query_map {
+            if query.len() > 0 {
+                query = query + "&";
+            }
+            query = query + &format!("{}={}", key, value);
+        }
+        self.query = Some(query);
         self
     }
 
