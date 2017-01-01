@@ -216,6 +216,36 @@ impl UriBuilder {
         self
     }
 
+    /// Build a query string out of a vector of arrays and add it to the Uri
+    ///
+    /// This provides an alternate way to generate a query string. Using a
+    /// vector of arrays, however, allows us to provide a deterministic
+    /// generation. This is in sharp contrast to `add_query_map`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rfc3986::uri_builder::UriBuilder;
+    ///
+    /// let query_params = vec![["a", "1"], ["b", "2"], ["c", "3"]];
+    /// let uri = UriBuilder::new()
+    ///             .add_query_list(&query_params)
+    ///             .finalize();
+    /// assert_eq!(Some("a=1&b=2&c=3".to_string()), uri.query);
+    /// ```
+    pub fn add_query_list(&mut self, query_list: &Vec<[&str; 2]>) -> &mut UriBuilder {
+        let mut query = String::new();
+        for pair in query_list {
+            let (key, value) = (pair[0], pair[1]);
+            if query.len() > 0 {
+                query = query + "&";
+            }
+            query = query + &format!("{}={}", key, value);
+        }
+        self.query = Some(query);
+        self
+    }
+
     /// Finalize the `UriBuilder` and create a `Uri` from it.
     ///
     /// # Examples
