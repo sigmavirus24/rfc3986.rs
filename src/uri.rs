@@ -168,12 +168,36 @@ impl Uri {
         }
     }
 
-    fn validate_scheme(&self) -> &Uri {
+    /// Validate the scheme in the URI is ascii only and alphabetic.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rfc3986::uri::Uri;
+    ///
+    /// let uri = Uri::from_str("https://google.com/");
+    /// assert_eq!(Some("https".to_string()), uri.validate_scheme().scheme);
+    /// ```
+    pub fn validate_scheme(&self) -> &Uri {
         if let Some(ref scheme) = self.scheme {
+            let scheme_str = scheme.as_str();
+            if !scheme_str.is_ascii() {
+                panic!("'{}' is not ASCII and thus not a valid scheme", scheme);
+            }
             for character in scheme.chars() {
-                if !(character.is_ascii() && character.is_alphabetic()) {
+                if !character.is_alphabetic() {
                     panic!("'{}' is not valid in a URI scheme", character);
                 }
+            }
+        }
+        self
+    }
+
+    pub fn validate_scheme_one_of(&self, allowed_schemes: Vec<&str>) -> &Uri {
+        if let Some(ref scheme) = self.scheme {
+            let scheme_str = scheme.as_str();
+            if !allowed_schemes.contains(&scheme_str) {
+                panic!("'{}' is not in the set of allowed schemes", scheme);
             }
         }
         self
@@ -251,4 +275,11 @@ mod tests {
         uri.validate_scheme();
     }
 
+
+    #[test]
+    #[should_panic]
+    fn it_validates_one_of_allowed_schemes() {
+        let uri = Uri::from_str("https+git://github.com/rust-lang/rust");
+        uri.validate_scheme_one_of(vec!["https", "http", "git"]);
+    }
 }
