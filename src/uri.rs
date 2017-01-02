@@ -119,11 +119,15 @@ impl Uri {
             let other_parts: Vec<&str> = parts[1].splitn(2, '/').collect();
             port = Some(other_parts[0].parse::<u16>().unwrap());
             rest = other_parts[1];
-        } else {
+        } else if rest.contains('/') {
             let parts: Vec<&str> = rest.splitn(2, '/').collect();
             host = parts[0].to_string();
             rest = parts[1];
             port = None;
+        } else {
+            host = rest.to_string();
+            port = None;
+            rest = "";
         }
         
         if rest.len() >= 1 {
@@ -281,5 +285,12 @@ mod tests {
     fn it_validates_one_of_allowed_schemes() {
         let uri = Uri::from_str("https+git://github.com/rust-lang/rust");
         uri.validate_scheme_one_of(vec!["https", "http", "git"]);
+    }
+
+    #[test]
+    fn it_parses_a_uri_without_an_explicit_path() {
+        let uri = Uri::from_str("https://example.com");
+        assert_eq!(String::from("example.com"), uri.host);
+        assert_eq!(None, uri.path);
     }
 }
