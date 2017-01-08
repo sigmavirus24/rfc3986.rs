@@ -1,5 +1,6 @@
 #![feature(test)]
 extern crate test;
+extern crate rfc3986;
 
 use test::Bencher;
 use rfc3986::uri::Uri;
