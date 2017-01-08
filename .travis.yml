@@ -5,6 +5,7 @@ rust:
   - beta
   - nightly
 
-script:
-  - echo "$TRAVIS_RUST_VERSION"
-  - cargo test
+after_success:
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ] ; then
+      cargo bench
+    fi
