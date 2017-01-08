@@ -1,0 +1,10 @@
+language: rust
+
+rust:
+  - stable
+  - beta
+  - nightly
+
+script:
+  - echo "$TRAVIS_RUST_VERSION"
+  - cargo test
